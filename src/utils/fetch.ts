@@ -1,6 +1,6 @@
 import fs from "fs";
 
-const DAY = 3
+const DAY = 5
 
 const getInput = async () => {
     const { Readable } = require('stream');
