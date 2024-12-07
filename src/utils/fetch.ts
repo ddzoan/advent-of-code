@@ -1,11 +1,13 @@
 import fs from "fs";
 
-const DAY = 7
+const FETCH_BUFFER = 5000; // add 5 seconds to make sure I'm fetching the input after it's available
+const now = new Date();
+const DAY = now.getDate() + 1;
 
-const getInput = async () => {
+const getInput = async (inputFilePath) => {
     const { Readable } = require('stream');
     const { finished } = require('stream/promises');
-    const stream = fs.createWriteStream(`./src/${DAY}i`);
+    const stream = fs.createWriteStream(inputFilePath);
     
     const {body} = await fetch(`https://adventofcode.com/2024/day/${DAY}/input`, {
         "headers": {
@@ -29,4 +31,21 @@ const getInput = async () => {
     await finished(Readable.fromWeb(body).pipe(stream));
 }
 
-getInput();
+const newFilePath = `src/${DAY}.ts`;
+
+if (!fs.existsSync(newFilePath)) {
+    fs.copyFileSync('src/template.ts', newFilePath)
+} else {
+    console.log(newFilePath, 'already exists. Not overwriting');
+}
+
+const openTime = new Date(`12/${now.getDate()}/2024 21:00:00`);
+
+const secondsToStart = openTime.valueOf() - now.valueOf() + FETCH_BUFFER;
+
+console.log(`fetching input in ${secondsToStart / 1000} seconds (${secondsToStart / 1000 / 60} minutes)`);
+
+const inputFilePath = `./src/${DAY}i`;
+if (!fs.existsSync(inputFilePath)) {
+    setTimeout(() => getInput(inputFilePath), secondsToStart);
+}
