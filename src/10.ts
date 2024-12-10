@@ -3,7 +3,7 @@ import { dirOffset, importFile, isInBounds } from './utils/utils';
 import { Logger } from './utils/utils';
 
 const data = importFile(__filename).trim();
-const testAnswer = 36;
+const testAnswer = 81;
 const testData = `89010123
 78121874
 87430965
@@ -15,7 +15,7 @@ const testData = `89010123
 
 const posStr = (row, col) => `${row},${col}`;
 
-const dfs = (row, col, grid, visited) => {
+const dfs = (row, col, grid) => {
     const currentHeight = grid[row][col];
     // console.log(row, col)
     return dirOffset.map(([rowOs, colOs]) => {
@@ -23,15 +23,13 @@ const dfs = (row, col, grid, visited) => {
             return 0;
         }
         const offsetHeight = grid[row + rowOs][col + colOs];
-        if(visited.has(posStr(row + rowOs, col + colOs))) {
-            return 0;
-        } else if(offsetHeight === currentHeight + 1) {
-            visited.add(posStr(row + rowOs, col + colOs));
+        if(offsetHeight === currentHeight + 1) {
+            // visited.add(posStr(row + rowOs, col + colOs));
             if(offsetHeight === 9) {
                 return 1;
             }
             console.log('going to', row + rowOs, col + colOs)
-            return dfs(row + rowOs, col + colOs, grid, visited);
+            return dfs(row + rowOs, col + colOs, grid);
         } else {
             return 0;
         }
@@ -53,7 +51,7 @@ const run = (data, showLogs) => {
             if(grid[row][col] === 0) {
                 const visited = new Set();
                 clog.log(row, col)
-                sum += dfs(row, col, grid, visited);
+                sum += dfs(row, col, grid);
             }
         }
     }
