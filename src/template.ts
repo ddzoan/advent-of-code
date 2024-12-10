@@ -1,21 +1,21 @@
 import { importFile } from './utils/utils';
-import { Logger } from './utils/utils';
+
+let shouldLog = true;
+const clog = (...args) => shouldLog && console.log(args);
 
 const data = importFile(__filename).trim();
 const testAnswer = 0;
 const testData = ``
 
-const run = (data, showLogs) => {
-    const clog = new Logger(showLogs);
-    clog.log()
-
+const run = (data) => {
 
 }
 
-const testRunResult = run(testData, true);
+const testRunResult = run(testData);
 console.log(testRunResult);
 
 if(testRunResult === testAnswer) {
     console.log('Test data answer correct! Trying with real input')
-    console.log(run(data, false))
+    shouldLog = false;
+    console.log(run(data))
 }
