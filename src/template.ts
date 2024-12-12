@@ -1,7 +1,7 @@
 import { importFile } from './utils/utils';
 
 let shouldLog = true;
-const clog = (...args) => shouldLog && console.log(args);
+const clog = (...args) => shouldLog && console.log(...args);
 
 const data = importFile(__filename).trim();
 const testAnswer = 0;
