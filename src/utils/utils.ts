@@ -30,4 +30,4 @@ export const isInBounds = (position, grid) => {
 }
 
 // turning a position to a string (useful for sets)
-export const posStr = (row, col) => `${row},${col}`;
+export const posStr = (rowOrPosition: number | [number, number], col?: number | undefined) => col === undefined ? `${rowOrPosition[0]},${rowOrPosition[1]}` : `${rowOrPosition},${col}`;
