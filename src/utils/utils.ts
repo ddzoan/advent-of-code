@@ -24,6 +24,39 @@ export const dirOffset = [
     [-1, 0],
 ]
 
+// export interface Position {
+//     row: number,
+//     col: number,
+// }
+
+export const positionMove = (position, offset) => {
+    return [position[0] + offset[0], position[1] + offset[1]];
+}
+
+export class Grid {
+    grid: string[][];
+    constructor(string) {
+        this.grid = string.split('\n').map(row => row.split(''));
+    }
+    get(position) {
+        return this.grid[position[0]][position[1]];
+    }
+    isInBounds(position) {
+        const [row, col] = position;
+        return row >= 0 && col >= 0 && row < this.grid.length && col < this.grid[0].length;
+    }
+    find(char: string) {
+        for(let row = 0; row < this.grid.length; row++) {
+            for(let col = 0; col < this.grid[0].length; col++) {
+                if(this.grid[row][col] === char) {
+                    return [row, col];
+                }
+            }
+        }
+        return null;
+    }
+}
+
 export const isInBounds = (position, grid) => {
     const [row, col] = position;
     return row >= 0 && col >= 0 && row < grid.length && col < grid[0].length;
