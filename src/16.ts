@@ -63,35 +63,24 @@ const run = (data) => {
     minPQ.push({ position: [...starting], direction: 'W', points: 2000 });
     // console.log(minPQ)
     let currentPosition;
-    while (!minPQ.isEmpty()) {
+    let cheapestPath;
+    while (!minPQ.isEmpty() && (cheapestPath === undefined || minPQ.front().points < cheapestPath) ) {
         currentPosition = minPQ.pop();
-        clog(currentPosition)
+        // clog(currentPosition)
         if(!visited.has(serialize(currentPosition)) && grid.get(currentPosition.position) !== '#') {
             visited.add(serialize(currentPosition));
     
             if (grid.get(currentPosition.position) === 'E') {
-                return currentPosition.points;
+                cheapestPath = currentPosition.points;
             }
     
             const nextPositionInSameDir = positionMove(currentPosition.position, dirMap[currentPosition.direction]);
             const charAtNextPosition = grid.get(nextPositionInSameDir);
-            if(currentPosition.position[0] === 13 && currentPosition.position[1] === 11) {
-                clog('next in same dir', currentPosition, nextPositionInSameDir)
-            }
             if (
-                // !visited.has(serialize({ position: nextPositionInSameDir, direction: currentPosition.direction }))
-                true
+                !visited.has(serialize({ position: nextPositionInSameDir, direction: currentPosition.direction }))
                 && (charAtNextPosition === '.'
                     || charAtNextPosition === 'E')
             ) {
-                if(currentPosition.position[0] === 13 && currentPosition.position[1] === 11) {
-                    clog(currentPosition, nextPositionInSameDir)
-                    clog('next turn',{
-                        position: nextPositionInSameDir,
-                        direction: currentPosition.direction,
-                        points: currentPosition.points + 1
-                    })
-                }
                 minPQ.push({
                     position: nextPositionInSameDir,
                     direction: currentPosition.direction,
@@ -99,22 +88,16 @@ const run = (data) => {
                 });
             }
             const nextDirs = currentPosition.direction === 'N' || currentPosition.direction === 'S' ? ['E', 'W'] : ['N', 'S'];
-            if(currentPosition.position[0] === 13 && currentPosition.position[1] === 11) {
-                clog(nextDirs)
-            }
             nextDirs
                 .map(direction => ({ position: currentPosition.position, direction, points: currentPosition.points + 1000 }))
                 // .filter(nextPosition => !visited.has(serialize(nextPosition)))
                 .forEach(nextPos => {
-                    if(currentPosition.position[0] === 13 && currentPosition.position[1] === 11) {
-                        clog(currentPosition)
-                        clog('next turn',nextPos)
-                    }
                     minPQ.push(nextPos)
                 });
         }
 
     }
+    return cheapestPath;
     console.log("didn't find apparently")
 }
 
