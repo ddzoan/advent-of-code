@@ -12,6 +12,12 @@ const data = importFile(__filename).trim();
 // Register C: 0
 
 // Program: 0,1,5,4,3,0`
+const testAnswer = 117440;
+const testData = `Register A: 2024
+Register B: 0
+Register C: 0
+
+Program: 0,3,5,4,3,0`
 
 const comboOperand = (operand, registers) => {
     switch(operand) {
@@ -90,6 +96,22 @@ const functionMap = {
     7: cdv,
 }
 
+const outputMatchesSoFar = (output, program) => {
+    for(let i = 0; i < output.length; i++) {
+        if(output[i] !== program[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+const outputMatches = (output, program) => {
+    if(output.length !== program.length) {
+        return false;
+    }
+    return outputMatchesSoFar(output, program);
+}
+
 const run = (data) => {
     const registers = {};
     const rawData = data.split('\n');
@@ -102,75 +124,86 @@ const run = (data) => {
     const program = rawData.slice(split + 1)[0].split(' ')[1].split(',').map(a => parseInt(a));
     clog(registers)
     clog(program)
-    const output = [];
-    let instructionPointer = 0;
-    while(instructionPointer < program.length) {
-        // do instruction
-        const opcode = program[instructionPointer];
-        const operand = program[instructionPointer + 1];
-        // clog('opcode', opcode)
-        // clog('operand', operand)
-        const result = functionMap[opcode](operand, registers);
-        if(result?.output !== undefined) {
-            console.log('output', result.output)
-            output.push(result.output);
+    let startingA = 0;
+    let matchFound;
+    while(!matchFound) {
+        registers.A = startingA;
+        registers.B = 0;
+        registers.C = 0;
+        console.log('checking with register A starting at:', startingA)
+        const output = [];
+        let instructionPointer = 0;
+        while(instructionPointer < program.length && outputMatchesSoFar(output, program)) {
+            const opcode = program[instructionPointer];
+            const operand = program[instructionPointer + 1];
+            
+            const result = functionMap[opcode](operand, registers);
+            if(result?.output !== undefined) {
+                output.push(result.output);
+            }
+            if(result?.instructionPointer !== undefined) {
+                instructionPointer = result.instructionPointer;
+            } else {
+                instructionPointer += 2;
+            }
+            // console.log('ins pointer', instructionPointer)
+            // clog(registers)
         }
-        if(result?.instructionPointer !== undefined) {
-            instructionPointer = result.instructionPointer;
+        if(outputMatches(output, program)) {
+            matchFound = true;
         } else {
-            instructionPointer += 2;
+            startingA++;
         }
-        console.log('ins pointer', instructionPointer)
-        // clog(registers)
     }
-    console.log(registers)
-    return {registers, output: output.join(',')};
+    return registers.A;
+    // console.log(registers)
+    // return {registers, output: output.join(',')};
 }
 
-let tests;
-let res;
+// let tests;
+// let res;
 
-tests = {C: 9};
-res = bst(6, tests);
-assert(tests.B === 1)
+// tests = {C: 9};
+// res = bst(6, tests);
+// assert(tests.B === 1)
 
-tests = `Register A: 10
-Register B: 0
-Register C: 0
+// tests = `Register A: 10
+// Register B: 0
+// Register C: 0
 
-Program: 5,0,5,1,5,4`
-res = run(tests);
-assert(res.output === '0,1,2');
+// Program: 5,0,5,1,5,4`
+// res = run(tests);
+// assert(res.output === '0,1,2');
 
-tests = `Register A: 2024
+// tests = `Register A: 2024
 
-Program: 0,1,5,4,3,0`
-res = run(tests)
-console.log(res)
-assert(res.output === '4,2,5,6,7,7,7,7,3,1,0');
-assert(res.registers.A === 0)
+// Program: 0,1,5,4,3,0`
+// res = run(tests)
+// console.log(res)
+// assert(res.output === '4,2,5,6,7,7,7,7,3,1,0');
+// assert(res.registers.A === 0)
 
-tests = `Register B: 29
+// tests = `Register B: 29
 
-Program: 1,7`
-res = run(tests);
-assert(res.registers.B === 26);
+// Program: 1,7`
+// res = run(tests);
+// assert(res.registers.B === 26);
 
-tests = `Register B: 2024
-Register C: 43690
+// tests = `Register B: 2024
+// Register C: 43690
 
-Program: 4,0`
-res = run(tests);
-assert(res.registers.B === 44354)
-
-
+// Program: 4,0`
+// res = run(tests);
+// assert(res.registers.B === 44354)
 
 
-// const testRunResult = run(testData);
-// console.log(testRunResult);
 
-// if(testRunResult === testAnswer) {
+
+const testRunResult = run(testData);
+console.log(testRunResult);
+
+if(testRunResult === testAnswer) {
     console.log('Test data answer correct! Trying with real input')
     shouldLog = false;
     console.log(run(data))
-// }
+}
