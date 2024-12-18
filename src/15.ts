@@ -38,7 +38,7 @@ const dirMap = {
 const canMove = (position, grid, dirStr) => {
     let [row, col] = position;
     let gridCell = grid.get(position);
-    while(gridCell !== '.' && gridCell !== '#') {
+    while (gridCell !== '.' && gridCell !== '#') {
         const [rOff, cOff] = dirMap[dirStr];
         row += rOff;
         col += cOff;
@@ -47,31 +47,61 @@ const canMove = (position, grid, dirStr) => {
     return gridCell === '.' ? [row, col] : null;
 }
 
+const moveThings = (grid, robotPosition, moveDir) => {
+    let moveTo = canMove(robotPosition, grid, moveDir);
+    if (moveTo !== null) {
+        grid.place(robotPosition, '.');
+        const newPosition = positionMove(robotPosition, dirMap[moveDir]);
+        robotPosition[0] = newPosition[0];
+        robotPosition[1] = newPosition[1];
+        grid.place(newPosition, '@');
+        if (moveTo[0] === newPosition[0] && moveTo[1] === newPosition[1]) {
+    
+        } else {
+            grid.place(moveTo, 'O');
+        }
+    }
+}
+
 const run = (data) => {
     const rawData = data.split('\n');
     const split = rawData.findIndex(row => row === '');
-    const grid = new Grid(rawData.slice(0, split).join('\n'));
+    // let newGrid = '';
+    let newGrid = rawData.slice(0, split).join('\n');
+    // rawData.slice(0, split).forEach(line => {
+    //     for(let i = 0; i < line.length; i++) {
+    //         switch (line[i]) {
+    //             case '#':
+    //                 newGrid += '##';
+    //                 break;
+    //             case 'O':
+    //                 newGrid += '[]';
+    //                 break;
+    //             case '.':
+    //                 newGrid += '..';
+    //                 break;
+    //             case '@':
+    //                 newGrid += '@.';
+    //                 break;
+    //             default:
+    //                 throw 'shoundt be here';
+    //                 break;
+    //         }
+    //     }
+    //     newGrid += '\n';
+    // });
+    const grid = new Grid(newGrid);
     // clog(grid);
+    // grid.display()
     const moves = rawData.slice(split).join('').split('');
     // clog(moves);
-    
+
     let robotPosition = grid.find('@');
     clog(robotPosition)
 
     moves.forEach((move) => {
         // clog(move)
-        let moveTo = canMove(robotPosition, grid, move);
-        if(moveTo !== null) {
-            grid.place(robotPosition, '.');
-            const newPosition = positionMove(robotPosition, dirMap[move]);
-            robotPosition = newPosition;
-            grid.place(newPosition, '@');
-            if(moveTo[0] === newPosition[0] && moveTo[1] === newPosition[1]) {
-
-            } else {
-                grid.place(moveTo, 'O');
-            }
-        }
+        moveThings(grid, robotPosition, move);
     });
 
     grid.display();
@@ -85,7 +115,7 @@ const run = (data) => {
 const testRunResult = run(testData);
 console.log(testRunResult);
 
-if(testRunResult === testAnswer) {
+if (testRunResult === testAnswer) {
     console.log('Test data answer correct! Trying with real input')
     shouldLog = false;
     console.log(run(data))
