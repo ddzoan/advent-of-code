@@ -38,8 +38,8 @@ const pathThrough = (grid, size) => {
     while(queue.length > 0) {
         const currentPosition = queue.shift();
         const nextPositions = adjacent(currentPosition?.position).filter(adjPos => grid.isInBounds(adjPos)).filter(adjPos => !visited.has(adjPos)).filter(pos => grid.get(pos) !== '#');
-        console.log('current', currentPosition?.position);
-        console.log(nextPositions)
+        // console.log('current', currentPosition?.position);
+        // console.log(nextPositions)
         for(let adjPosition of nextPositions) {
             if(adjPosition[0] === size - 1 && adjPosition[1] === size - 1) {
                 return currentPosition.distance + 1;
@@ -54,23 +54,27 @@ const pathThrough = (grid, size) => {
     return null;
 }
 
-const run = (data, size, bytes) => {
+const run = (data, size) => {
     const grid = makeGrid(size, size);
     // clog(grid)
     const commands = data.split('\n').map(line => line.split(','));
-    for(let t = 0; t < bytes && commands[t] !== undefined; t++) {
-        console.log(commands[t])
-        grid.place(commands[t], '#');
+    let commandIndex = -1;
+    let lastPath = pathThrough(grid, size);
+    while(lastPath !== null) {
+        commandIndex++;
+        console.log(commandIndex)
+        grid.place(commands[commandIndex], '#');
+        lastPath = pathThrough(grid, size);
+        console.log('dist', lastPath)
     }
-    // grid.display()
-    return pathThrough(grid, size);
+    return commands[commandIndex]
 }
 
-const testRunResult = run(testData, 6 + 1, 12);
-console.log(testRunResult);
+// const testRunResult = run(testData, 6 + 1, 12);
+// console.log(testRunResult);
 
-if(testRunResult === testAnswer) {
+// if(testRunResult === testAnswer) {
     console.log('Test data answer correct! Trying with real input')
     shouldLog = false;
-    console.log(run(data, 70 + 1, 1024))
-}
+    console.log(run(data, 70 + 1))
+// }
