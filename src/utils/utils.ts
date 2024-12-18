@@ -55,6 +55,36 @@ export class Grid {
         }
         return null;
     }
+    place(point, char) {
+        this.grid[point[0]][point[1]] = char;
+    }
+    display() {
+        console.log(this.grid.map(row => row.join('')).join('\n'))
+    }
+}
+
+export const makeGrid = (rows, cols) => {
+    let newGrid = '';
+    for(let row = 0; row < rows; row++) {
+       newGrid += '.'.repeat(cols) + '\n' 
+    }
+    return new Grid(newGrid.trim());
+}
+
+export const adjacent = (position) => dirOffset.map(([offsetRow, offsetCol]) => [position[0] + offsetRow, position[1] + offsetCol]);
+
+export class PositionSet {
+    set = new Set();
+    constructor() {}
+    add(position) {
+        return this.set.add(this.serialize(position));
+    }
+    has(position) {
+        return this.set.has(this.serialize(position));
+    }
+    serialize(position) {
+        return `${position[0]},${position[1]}`;
+    }
 }
 
 export const isInBounds = (position, grid) => {
