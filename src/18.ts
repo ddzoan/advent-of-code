@@ -31,15 +31,7 @@ const testData = `5,4
 1,6
 2,0`
 
-const run = (data, size, bytes) => {
-    const grid = makeGrid(size, size);
-    // clog(grid)
-    const commands = data.split('\n').map(line => line.split(','));
-    for(let t = 0; t < bytes && commands[t] !== undefined; t++) {
-        console.log(commands[t])
-        grid.place(commands[t], '#');
-    }
-    // grid.display()
+const pathThrough = (grid, size) => {
     const visited = new PositionSet();
     visited.add([0,0]);
     const queue = [{position: [0,0], distance: 0}];
@@ -59,7 +51,19 @@ const run = (data, size, bytes) => {
             })
         }
     }
-    throw 'not found'
+    return null;
+}
+
+const run = (data, size, bytes) => {
+    const grid = makeGrid(size, size);
+    // clog(grid)
+    const commands = data.split('\n').map(line => line.split(','));
+    for(let t = 0; t < bytes && commands[t] !== undefined; t++) {
+        console.log(commands[t])
+        grid.place(commands[t], '#');
+    }
+    // grid.display()
+    return pathThrough(grid, size);
 }
 
 const testRunResult = run(testData, 6 + 1, 12);
