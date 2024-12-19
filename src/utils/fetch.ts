@@ -3,6 +3,7 @@ import fs from "fs";
 const FETCH_BUFFER = 5000; // add 5 seconds to make sure I'm fetching the input after it's available
 const now = new Date();
 const DAY = now.getDate() + 1;
+const FETCH_NOW = false
 
 const getInput = async (inputFilePath) => {
     const { Readable } = require('stream');
@@ -47,5 +48,9 @@ console.log(`fetching input in ${secondsToStart / 1000} seconds (${secondsToStar
 
 const inputFilePath = `./src/${DAY}i`;
 if (!fs.existsSync(inputFilePath)) {
-    setTimeout(() => getInput(inputFilePath), secondsToStart);
+    if(FETCH_NOW) {
+        getInput(inputFilePath)
+    } else {
+        setTimeout(() => getInput(inputFilePath), secondsToStart);
+    }
 }
